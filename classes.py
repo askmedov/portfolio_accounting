@@ -1,13 +1,11 @@
 from abc import ABC, abstractmethod
 
 
-class Asset(ABC):
+class Asset():
     
-    @abstractmethod
-    def load_price_history(prices: pd.Series):
-        pass
-    
-    @abstractmethod
-    def update_price(prices: pd.Series):
-        pass
+    def load_price_history(self, prices: pd.Series):
+        self.prices = prices
+
+    def update_price(self, prices: pd.Series):
+        self.prices = prices.combine_first(self.prices)
 
