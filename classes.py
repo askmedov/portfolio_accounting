@@ -10,3 +10,4 @@ class Asset(ABC):
     @abstractmethod
     def update_price(prices: pd.Series):
         pass
+
