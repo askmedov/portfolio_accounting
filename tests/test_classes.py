@@ -99,7 +99,6 @@ def test_Debt():
     with pytest.raises(AssertionError):
         debt = Debt(rate=input_rate_schedule, maturity=maturity_date, inception=inception_date)
     
-    
     dates = [
         '2022-01-01',
         '2022-01-02',
@@ -150,29 +149,4 @@ def test_Debt():
     debt = Debt(pmt_schedule=input_pmt_schedule, maturity=maturity_date, inception=inception_date)
     assert_frame_equal(debt.pmt_schedule, input_pmt_schedule, check_freq=False)
      
-        
     
-    
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-       
