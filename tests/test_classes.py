@@ -64,7 +64,6 @@ def test_Debt():
     rates = [rate, rate, rate, rate, rate]
     expected_rate_schedule = pd.Series(data=rates, index=dates)
     debt = Debt(rate=rate, maturity=maturity_date, inception=inception_date)
-#     breakpoint()
     assert_series_equal(debt.rate, expected_rate_schedule, check_freq=False)
     
     rate1 = 0.04
