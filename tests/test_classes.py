@@ -5,7 +5,7 @@ import numpy as np
 from pandas.testing import assert_series_equal, assert_frame_equal
 from pyxirr import DayCount
 
-from ..classes import Asset, Debt
+from ..classes import Asset, Debt, Bill, _ytm 
 
 
 def test_Asset():
@@ -154,3 +154,42 @@ def test_Debt():
     
     debt = Debt(convention=DayCount.ACT_360, maturity=maturity_date, inception=inception_date)
     assert debt.convention == DayCount.ACT_360
+    
+
+# Example test cases
+def test_bill_initialization():
+    inception = '2023-06-01'
+    maturity = '2024-06-01'
+    face_value = 1000
+    convention = DayCount.ACT_360
+
+    bill = Bill(inception=inception, maturity=maturity, face_value=face_value, convention=convention)
+
+    assert bill.inception == pd.to_datetime(inception)
+    assert bill.maturity == pd.to_datetime(maturity)
+    assert bill.face_value == face_value
+    assert bill.convention == convention
+    assert_series_equal(bill.pmt_schedule, pd.Series({pd.to_datetime(maturity): face_value}), check_freq=False)
+
+def test_bill_calc_ytm():
+    inception = '2023-06-01'
+    maturity = '2024-06-01'
+    face_value = 1000
+    convention = DayCount.ACT_360
+    
+    start_date = inception
+    end_date = '2023-12-01'
+
+    dates = pd.date_range(start=start_date, end=end_date , freq='B')
+    prices = np.linspace(88, 94, dates.shape[0])
+    prices = pd.Series(prices, index=dates)
+
+    bill = Bill(inception=inception, maturity=maturity, face_value=face_value, convention=convention)
+    bill.load_price_history(prices)
+    ytm = bill.calc_ytm(return_series=True)
+
+    assert isinstance(ytm, pd.Series)
+    assert ytm.index.equals(bill.prices.index)
+    assert ytm.dtype == float
+    assert ytm.dropna().equals(ytm)  # Check that there are no NaN values in the result
+
