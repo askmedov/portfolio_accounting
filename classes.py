@@ -3,6 +3,8 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from pyxirr import DayCount
+
 
 DT_SERIES_ERROR = "pd.Series index must be pd.DateTimeIndex"
 
@@ -25,7 +27,8 @@ class Debt(Asset):
                  maturity: Union[pd.Timestamp, str] = None,
                  rate: Union[float, pd.Series] = None,
                  face_value: Union[int, float] = 1,
-                 pmt_schedule: Union[pd.Series, pd.DataFrame] = None):
+                 pmt_schedule: Union[pd.Series, pd.DataFrame] = None,
+                 convention: DayCount = DayCount.THIRTY_360_ISDA):
         
         if isinstance(inception, str):
             inception = pd.to_datetime(inception)
@@ -58,4 +61,6 @@ class Debt(Asset):
             err_msg = "columns of payment schedule must be ['interest', 'principal']"
             assert all(pmt_schedule.columns == ['interest', 'principal']), err_msg
         self.pmt_schedule = pmt_schedule
+        
+        self.convention = convention
         
