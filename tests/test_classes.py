@@ -3,6 +3,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from pandas.testing import assert_series_equal, assert_frame_equal
+from pyxirr import DayCount
 
 from ..classes import Asset, Debt
 
@@ -148,5 +149,9 @@ def test_Debt():
     input_pmt_schedule.index = pd.to_datetime(input_pmt_schedule.index)
     debt = Debt(pmt_schedule=input_pmt_schedule, maturity=maturity_date, inception=inception_date)
     assert_frame_equal(debt.pmt_schedule, input_pmt_schedule, check_freq=False)
-     
     
+    with pytest.raises(AssertionError):
+        debt = Debt(convention='30/360', maturity=maturity_date, inception=inception_date)
+    
+    debt = Debt(convention=DayCount.ACT_360, maturity=maturity_date, inception=inception_date)
+    assert debt.convention == DayCount.ACT_360

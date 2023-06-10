@@ -2,7 +2,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-
 from pyxirr import DayCount
 
 
@@ -62,5 +61,6 @@ class Debt(Asset):
             assert all(pmt_schedule.columns == ['interest', 'principal']), err_msg
         self.pmt_schedule = pmt_schedule
         
+        assert isinstance(convention, DayCount)
         self.convention = convention
         
