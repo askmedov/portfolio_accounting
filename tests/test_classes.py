@@ -156,7 +156,6 @@ def test_Debt():
     assert debt.convention == DayCount.ACT_360
     
 
-# Example test cases
 def test_bill_initialization():
     inception = '2023-06-01'
     maturity = '2024-06-01'
@@ -191,5 +190,5 @@ def test_bill_calc_ytm():
     assert isinstance(ytm, pd.Series)
     assert ytm.index.equals(bill.prices.index)
     assert ytm.dtype == float
-    assert ytm.dropna().equals(ytm)  # Check that there are no NaN values in the result
+    assert ytm.dropna().equals(ytm)
 
