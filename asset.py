@@ -13,7 +13,7 @@ class Asset:
     
 class AssetMethods():
     
-    def __init__(self, asset):
+    def __init__(self, asset: Asset):
         self.asset = asset
     
     def set_id(self, asset_id: str):
