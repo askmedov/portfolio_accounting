@@ -10,9 +10,6 @@ sys.path.append(package_path)
 from asset import Asset, AssetMethods
 
 
-DT_SERIES_ERROR = "prices should be a pandas Series with a DatetimeIndex"
-
-
 class AssetMethodsTest(unittest.TestCase):
     def setUp(self):
         self.asset = Asset()

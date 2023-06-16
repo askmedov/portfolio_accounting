@@ -1,7 +1,6 @@
 import pandas as pd
 
-
-DT_SERIES_ERROR = "pd.Series index must be pd.DateTimeIndex"
+from constants import DT_SERIES_ERROR
 
 
 class Asset:

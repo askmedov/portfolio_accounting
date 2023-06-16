@@ -6,9 +6,7 @@ import pandas as pd
 from pyxirr import DayCount
 
 from asset import Asset, AssetMethods
-
-
-DT_SERIES_ERROR = "pd.Series index must be pd.DateTimeIndex"
+from constants import DT_SERIES_ERROR
 
 
 class Debt(Asset):

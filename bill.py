@@ -6,7 +6,7 @@ import pandas as pd
 from pyxirr import DayCount
 
 from debt import Debt, DebtMethods
-from calculators import ytm_by_row
+from constants import DT_SERIES_ERROR
 
 
 class Bill(Debt):
