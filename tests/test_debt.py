@@ -10,7 +10,6 @@ from pyxirr import DayCount
 
 package_path = '\\'.join(os.path.realpath(__file__).split('\\')[:-2])
 sys.path.append(package_path)
-from asset import Asset, AssetMethods
 from debt import Debt, DebtMethods
 
 
