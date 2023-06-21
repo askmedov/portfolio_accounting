@@ -18,21 +18,50 @@ class TestACT_360(unittest.TestCase):
         self.ed_leap = pd.to_datetime('2020-03-31')
         
     def test_numerators(self):
-        # no maturity and inception
+        # inception is not provided, end-start < 1 year, regular year
         day_count = ACT_360()
-        self.assertEqual(day_count.numerator, 365)
+        numerator = day_count.numerator(start_date=pd.to_datetime('2014-10-01'),
+                                        end_date=pd.to_datetime('2015-02-01'))
+        self.assertEqual(numerator, 365)
         
-        # maturity and inception outside of a leap year
-        day_count = ACT_360(inception=pd.to_datetime('2017-07-01'), maturity=pd.to_datetime('2018-04-01'))
-        self.assertEqual(day_count.numerator, 365)
+        # inception is not provided, end-start < 1 year, leap year
+        day_count = ACT_360()
+        numerator = day_count.numerator(start_date=pd.to_datetime('2015-10-01'),
+                                        end_date=pd.to_datetime('2016-02-01'))
+        self.assertEqual(numerator, 366)
+        
+        # inception is not provided, end-start > 1 year
+        day_count = ACT_360()
+        numerator = day_count.numerator(start_date=pd.to_datetime('2014-10-01'),
+                                        end_date=pd.to_datetime('2018-02-01'))
+        self.assertAlmostEqual(numerator, 365.333333, places=6)
+        
+        # only inception is provided, start and end date span many years
+        day_count = ACT_360(inception=pd.to_datetime('2017-07-01'))
+        numerator = day_count.numerator(start_date=pd.to_datetime('2014-07-01'),
+                                        end_date=pd.to_datetime('2021-08-01'))
+        self.assertAlmostEqual(numerator, 365.285714, places=6)
+        
+        # inception and maturity are provided, start and end date span many years
+        day_count = ACT_360(inception=pd.to_datetime('2017-07-01'))
+        numerator = day_count.numerator(start_date=pd.to_datetime('2014-07-01'),
+                                        end_date=pd.to_datetime('2019-09-01'))
+        self.assertAlmostEqual(numerator, 365.2, places=1)
+        
+        # maturity and inception outside of a leap year, total tenor <= 1
+        day_count = ACT_360(inception=pd.to_datetime('2017-07-01'), 
+                            maturity=pd.to_datetime('2018-04-01'))
+        self.assertEqual(day_count.numerator(), 365)
         
         # maturity is exactly 1 leap year ahead
-        day_count = ACT_360(inception=pd.to_datetime('2019-09-01'), maturity=pd.to_datetime('2020-09-01'))
-        self.assertEqual(day_count.numerator, 366)
+        day_count = ACT_360(inception=pd.to_datetime('2019-09-01'), 
+                            maturity=pd.to_datetime('2020-09-01'))
+        self.assertEqual(day_count.numerator(), 366)
         
         # maturity is less than 1 year ahead and there is a leap day in the next 12 months
-        day_count = ACT_360(inception=pd.to_datetime('2019-06-01'), maturity=pd.to_datetime('2019-09-01'))
-        self.assertEqual(day_count.numerator, 366)
+        day_count = ACT_360(inception=pd.to_datetime('2019-06-01'), 
+                            maturity=pd.to_datetime('2019-09-01'))
+        self.assertEqual(day_count.numerator(), 366)
                 
     def test_calc_days(self):
         days = self.day_count.calc_days(self.start_date, self.end_date)
