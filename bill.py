@@ -3,7 +3,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from pyxirr import DayCount
 
 from debt import Debt, DebtMethods
 from constants import DT_SERIES_ERROR
@@ -33,7 +32,7 @@ class BillMethods(DebtMethods):
         if 'maturity' in kwargs and ('pmt_schedule' not in kwargs):
             pmt_schedule = pd.Series({pd.to_datetime(kwargs['maturity']): kwargs['face_value']})
             kwargs['pmt_schedule'] = pmt_schedule
-        
+            
         super().set_attributes(**kwargs)
     
     def calc_ytm(self, return_series=False):
@@ -42,7 +41,11 @@ class BillMethods(DebtMethods):
         df = self.bill.prices.to_frame(name='price')
         
         df['date'] = df.index
-        df['tenor'] = (self.bill.maturity - df['date']).dt.days / 365
+        df['maturity'] = self.bill.maturity
+        df['tenor'] = df[['date', 'maturity']]\
+                      .apply(lambda row: self.bill.convention.year_frac_ytm(\
+                      row['date'], row['maturity']), axis=1)
+        
         df['ytm'] = (100 / df['price'] - 1) / df['tenor']
         
         self.bill.historic_ytm = df['ytm']
@@ -51,9 +54,13 @@ class BillMethods(DebtMethods):
         
     def calc_discount(self, return_series=False, precision=6):
         assert self.bill.prices is not None
+        
         df = self.bill.prices.to_frame(name='price')
         df['date'] = df.index
-        df['tenor'] = (self.bill.maturity - df['date']).dt.days / 360
+        df['maturity'] = self.bill.maturity
+        df['tenor'] = df[['date', 'maturity']]\
+                      .apply(lambda row: self.bill.convention.year_frac_price(\
+                      row['date'], row['maturity']), axis=1)
         df['discount'] = np.round((100 - df['price']) / df['tenor'], precision)
         
         self.bill.discounts = df['discount']
@@ -65,7 +72,10 @@ class BillMethods(DebtMethods):
         df = discounts.to_frame(name='discount')
         
         df['date'] = df.index
-        df['tenor'] = (self.bill.maturity - df['date']).dt.days / 360
+        df['maturity'] = self.bill.maturity
+        df['tenor'] = df[['date', 'maturity']]\
+                      .apply(lambda row: self.bill.convention.year_frac_price(\
+                      row['date'], row['maturity']), axis=1)
         df['price'] = 100 - np.round(df['discount'] * df['tenor'], precision)
         
         return df['price']

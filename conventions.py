@@ -60,7 +60,7 @@ class ACT_360(DayCount):
     def calc_days(self, start_date, end_date):
         return (end_date - start_date).days
     
-    def year_frac_ytm(self, start_date, end_date):
+    def year_frac_ytm(self, start_date=None, end_date=None):
         return (end_date - start_date).days/self.numerator(start_date, end_date)
     
     def year_frac_price(self, start_date, end_date):

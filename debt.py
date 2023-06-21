@@ -3,10 +3,10 @@ import datetime
 
 import numpy as np
 import pandas as pd
-from pyxirr import DayCount
 
 from asset import Asset, AssetMethods
 from constants import DT_SERIES_ERROR
+from conventions import DayCount, ACT_360
 
 
 class Debt(Asset):
@@ -31,7 +31,7 @@ class DebtMethods(AssetMethods):
                  rate: Union[float, pd.Series] = None,
                  face_value: Union[int, float] = 1,
                  pmt_schedule: Union[pd.Series, pd.DataFrame] = None,
-                 convention: DayCount = DayCount.THIRTY_360_ISDA):
+                 convention: DayCount = ACT_360):
         
         if isinstance(inception, str):
             inception = pd.to_datetime(inception)
@@ -65,7 +65,8 @@ class DebtMethods(AssetMethods):
             assert all(pmt_schedule.columns == ['interest', 'principal']), err_msg
         self.debt.pmt_schedule = pmt_schedule
         
-        self.debt.convention = convention
+        self.debt.convention = convention(inception=self.debt.inception,
+                                          maturity=self.debt.maturity)
         
     def set_price_history(self, prices: pd.Series):
         if self.debt.inception is not None:

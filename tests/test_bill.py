@@ -6,11 +6,11 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 from pandas.testing import assert_series_equal
-from pyxirr import DayCount
 
 package_path = '\\'.join(os.path.realpath(__file__).split('\\')[:-2])
 sys.path.append(package_path)
 from bill import Bill, BillMethods
+from conventions import ACT_360
 
 
 class TestBillMethods(unittest.TestCase):
@@ -18,6 +18,7 @@ class TestBillMethods(unittest.TestCase):
     def setUp(self):
         self.bill = Bill()
         self.bill_methods = BillMethods(self.bill)
+        self.bill.convention = ACT_360()
 
     def test_set_attributes(self):
         isin = 'ABC123'
